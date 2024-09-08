@@ -26,6 +26,10 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Protest+Guerrilla&display=swap"
           rel="stylesheet"
         ></link>
+        <link href="https://fonts.googleapis.com/css2?family=Chathura:wght@100;300;400;700;800&display=swap" rel="stylesheet"></link>
+        <link href="https://fonts.googleapis.com/css2?family=Chathura:wght@100;300;400;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet"></link>
+        <link href="https://fonts.googleapis.com/css2?family=Abel&family=Chathura:wght@100;300;400;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet"></link>
+        <link href="https://fonts.googleapis.com/css2?family=Abel&family=Chathura:wght@100;300;400;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=SUSE:wght@100..800&display=swap" rel="stylesheet"></link>
       </head>
       <body className={inter.className}>
         <Providers>{children}</Providers>
