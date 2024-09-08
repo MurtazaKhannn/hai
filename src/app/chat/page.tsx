@@ -1,7 +1,7 @@
 "use client";
 
 import { Appbar } from "@/components/Appbar";
-import { ProgressDemo } from "@/components/Progress";
+import { ProgressDemo } from "@/components/Progress"; // Ensure you have this component implemented correctly
 import React, { useState, useRef, useEffect } from "react";
 import { AiOutlineSend } from "react-icons/ai";
 import { GoFileSubmodule } from "react-icons/go";
@@ -9,27 +9,24 @@ import { GoFileSubmodule } from "react-icons/go";
 const Page = () => {
   const [chat, setChat] = useState<{ type: string; message: string }[]>([]);
   const [input, setInput] = useState<string>("");
-  const [image, setImage] = useState(null);
-  
+  const [loading, setLoading] = useState<boolean>(false); // Boolean for loading state
+
   const chatEndRef = useRef<HTMLDivElement | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
   };
 
-  const uploadimage = (e: any) => {
-    setImage(e.target.files[0]);
-  };
-
-  console.log(image);
-
   const getmsg = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Add user message to chat
     const userMessage = { type: "user", message: input };
     setChat((prevChat) => [...prevChat, userMessage]);
     setInput("");
-    console.log(chat);
+
+    // Start loading state for bot message
+    setLoading(true);
 
     try {
       const response = await fetch("/api/chat", {
@@ -49,6 +46,8 @@ const Page = () => {
 
       const data = await response.json();
       const botMessage = { type: "bot", message: data.message };
+
+      // Add bot message to chat
       setChat((prevChat) => [...prevChat, botMessage]);
     } catch (error) {
       console.error("Error fetching message:", error);
@@ -56,52 +55,47 @@ const Page = () => {
         ...prevChat,
         { type: "bot", message: "Error fetching message" },
       ]);
+    } finally {
+      // Stop loading state after receiving the bot response
+      setLoading(false);
     }
   };
 
   const uploadFile = async (e: any) => {
     const formData = new FormData();
-    console.log(e.target.files[0]);
-  
     if (e.target.files && e.target.files[0]) {
       formData.append("file", e.target.files[0]);
-      console.log(formData);
-  
+
+      // Start loading state during file upload
+      setLoading(true);
+
       try {
         const response = await fetch("/api/uploaddoc", {
           method: "POST",
           body: formData,
         });
-  
-        console.log(response);
-  
+
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-  
-        // Assuming the response is text, we should parse it as JSON
-        const data = await response.json();  // Use .json() for JSON responses
-  
-        // Check the structure of the received data
-        console.log(data);
-  
-        // Safely access nested properties
-        const text = data?.result?.response?.candidates?.[0]?.content?.parts?.[0]?.text || "No text available";
-  
-        console.log(text);
-        setChat((prevChat) => [
-          ...prevChat,
-          { type: "bot", message: text },
-        ]);
+
+        const data = await response.json();
+        const text =
+          data?.result?.response?.candidates?.[0]?.content?.parts?.[0]?.text ||
+          "No text available";
+
+        // Add bot message to chat
+        setChat((prevChat) => [...prevChat, { type: "bot", message: text }]);
       } catch (error: any) {
         console.error("Error uploading file:", error);
         setChat((prevChat) => [
           ...prevChat,
           { type: "bot", message: "Error uploading file" },
         ]);
+      } finally {
+        // Stop loading state after receiving the bot response
+        setLoading(false);
       }
-    } else {
-      console.log("No file selected");
     }
   };
 
@@ -119,24 +113,30 @@ const Page = () => {
         </div>
       </div>
       <div className="w-[90vw] max-h-[75vh] absolute top-20 p-4 rounded-xl overflow-y-auto shadow-lg font-suse text-xl ">
-        
         <div className="flex flex-col space-y-4 overflow-y-auto">
-            {chat.map((msg, i) => (
+          {chat.map((msg, i) => (
+            <div
+              key={i}
+              className={`flex ${
+                msg.type === "user" ? "justify-start" : "justify-end"
+              }`}
+            >
               <div
-                key={i}
-                className={`flex ${msg.type === "user" ? "justify-start" : "justify-end"}`}
+                className={`p-2 rounded-lg bg-opacity-[.80] ${
+                  msg.type === "user" ? "bg-zinc-100" : "bg-zinc-300"
+                }`}
               >
-                <div
-                  className={`p-2 rounded-lg bg-opacity-[.80] ${
-                    msg.type === "user" ? "bg-zinc-100" : "bg-zinc-300"
-                  }`}
-                >
-                  {msg.message}
-                </div>
+                {/* If it's the last bot message and loading is true, show progress bar */}
+                {msg.type === "bot" && i === chat.length - 1 && loading ? (
+                  <ProgressDemo />
+                ) : (
+                  msg.message // Only show message if it's not loading
+                )}
               </div>
-            ))}
-          
-          <div ref={chatEndRef} /> {/* This is the element we scroll to */}</div>
+            </div>
+          ))}
+          <div ref={chatEndRef} /> {/* This is the element we scroll to */}
+        </div>
       </div>
       <div className="w-full absolute bottom-6 flex justify-center">
         <form className="w-[90vw] relative flex" onSubmit={getmsg}>
