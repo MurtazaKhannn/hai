@@ -1,15 +1,45 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials"; // Import credentials provider
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
+
+type User = {
+  id: number;
+  email: string;
+  username: string;
+};
 
 const handler = NextAuth({
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID ?? "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+    }),
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+
+        if (!credentials) {
+          return null; // or throw an error if you prefer
+        }
+        
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+        });
+
+        if (user && (await bcrypt.compare(credentials.password, user.password))) {
+          return { id: user.id, email: user.email, username: user.username };
+        }
+
+        return null; // Return null if login failed
+      },
     }),
   ],
   callbacks: {
@@ -40,10 +70,10 @@ const handler = NextAuth({
       }
       return false;
     },
-    async session({ session, user }) {
-      if (user) {
-        session.user.id = Number(user.id) // Add user ID to the session
-        session.user.username = user.username; // Add username to the session
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = Number(token.id);
+        session.user.username = String(token.username);
       }
       return session;
     },

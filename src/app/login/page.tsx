@@ -40,9 +40,19 @@ const Page = () => {
 
       const data = await res.json();
       console.log(data);
+
+      const signInResult = await signIn('credentials', {
+        email: input.email,
+        password: input.password,
+        redirect: false,
+      });
+
+      if (signInResult?.error) {
+        throw new Error(signInResult.error);
+      }
       
       alert("Login Successful");
-      router.push("/");
+      router.push("/chat");
       setInput({ email: '', password: '' });
     } catch (error) {
       console.error(error);
@@ -67,7 +77,7 @@ const Page = () => {
   }, [status, router]);
 
   return (
-    <div className='flex flex-col items-center justify-center w-full h-[100vh] gap-20'>
+    <div className='flex flex-col items-center justify-center w-full h-[100vh] gap-20 bg-black text-white'>
       <h1 className='text-4xl font-vina'>Login</h1>
       <form onSubmit={handleSubmit} className='flex flex-col items-center justify-center gap-6'>
         <input

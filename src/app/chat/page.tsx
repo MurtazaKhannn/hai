@@ -20,6 +20,8 @@ const Page = () => {
   const getmsg = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const userId = 8;
+
     // Add user message to chat
     const userMessage = { type: "user", message: input };
     setChat((prevChat) => [...prevChat, userMessage]);
@@ -37,6 +39,7 @@ const Page = () => {
         body: JSON.stringify({
           message: input,
           history: chat,
+          userId
         }),
       });
 
@@ -108,11 +111,11 @@ const Page = () => {
     <div className="w-full h-[100vh] flex flex-col items-center overflow-y-hidden justify-center">
       <div className="absolute top-0 w-full">
         <Appbar />
-        <div className="w-full h-[70vh] text-8xl font-protest flex items-center justify-center">
+        {/* <div className="w-full h-[70vh] text-8xl font-protest flex items-center justify-center">
           HENT AI
-        </div>
+        </div> */}
       </div>
-      <div className="w-[90vw] max-h-[75vh] absolute top-20 p-4 rounded-xl overflow-y-auto shadow-lg font-suse text-xl ">
+      <div className="w-[90vw] max-h-[75vh] absolute top-20 p-4 rounded-xl overflow-y-auto shadow-lg font-suse text-xl">
         <div className="flex flex-col space-y-4 overflow-y-auto">
           {chat.map((msg, i) => (
             <div

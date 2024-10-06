@@ -1,10 +1,13 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
   try {
     const reqBody = await req.json();
-    const { message, history } = reqBody;
+    const { message, history , userId } = reqBody;
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
@@ -31,6 +34,20 @@ export async function POST(req: NextRequest) {
 
     // Access the text of the first candidate safely
     const responseText = result?.response?.candidates?.[0]?.content?.parts?.[0]?.text || "No valid response received";
+
+    await prisma.chat.create({
+      data: {
+        message,
+        user: { connect: { id: userId } },
+      },
+    })
+
+    await prisma.chat.create({
+      data: {
+        message : responseText,
+        user: { connect: { id: userId } },
+      },
+    })
 
     return NextResponse.json({ message: responseText, status: 200 });
   } catch (error: any) {

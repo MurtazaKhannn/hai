@@ -18,4 +18,14 @@ model User {
   username String
   email    String @unique
   password String
+
+  Chat Chat[]
+}
+
+model Chat {
+  id        Int      @id @default(autoincrement())
+  message   String
+  createdAt DateTime @default(now())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
 }
