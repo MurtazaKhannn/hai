@@ -19,13 +19,31 @@ model User {
   email    String @unique
   password String
 
-  Chat Chat[]
+  conversations Conversation[]
 }
 
-model Chat {
-  id        Int      @id @default(autoincrement())
-  message   String
-  createdAt DateTime @default(now())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
+model Conversation {
+  id            Int         @id @default(autoincrement())
+  userId        Int         // Foreign key reference to User
+  user          User        @relation(fields: [userId], references: [id])
+  createdAt     DateTime    @default(now())
+  messages      Message[]   // Relationship to messages in this conversation
+
+  @@map("conversations")
+}
+
+model Message {
+  id            Int         @id @default(autoincrement())
+  conversationId Int        // Foreign key reference to Conversation
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  sender        SenderType  // Enum to specify who sent the message
+  content       String      // Text content of the message
+  createdAt     DateTime    @default(now())
+
+  @@map("messages")
+}
+
+enum SenderType {
+  USER
+  BOT
 }

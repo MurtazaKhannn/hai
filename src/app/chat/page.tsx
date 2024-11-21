@@ -20,7 +20,7 @@ const Page = () => {
   const getmsg = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const userId = 8;
+    const userId = 2;
 
     // Add user message to chat
     const userMessage = { type: "user", message: input };
