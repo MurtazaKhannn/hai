@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
         data: {
           content: responseText,
           sender: "BOT",
-          conversation: { connect: { id: newConversation?.id } }, // Use existing conversation
+          conversation: { connect: { id: newConversation?.id } }, 
         },
       });
 

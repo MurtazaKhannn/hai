@@ -6,11 +6,11 @@ import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
-type User = {
-  id: number;
-  email: string;
-  username: string;
-};
+// type User = {
+//   id: number;
+//   email: string;
+//   username: string;
+// };
 
 const handler = NextAuth({
   providers: [

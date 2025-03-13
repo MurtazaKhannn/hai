@@ -22,12 +22,10 @@ const Page = () => {
 
     const userId = 2;
 
-    // Add user message to chat
     const userMessage = { type: "user", message: input };
     setChat((prevChat) => [...prevChat, userMessage]);
     setInput("");
 
-    // Start loading state for bot message
     setLoading(true);
 
     try {
@@ -50,7 +48,6 @@ const Page = () => {
       const data = await response.json();
       const botMessage = { type: "bot", message: data.message };
 
-      // Add bot message to chat
       setChat((prevChat) => [...prevChat, botMessage]);
     } catch (error) {
       console.error("Error fetching message:", error);
@@ -59,7 +56,6 @@ const Page = () => {
         { type: "bot", message: "Error fetching message" },
       ]);
     } finally {
-      // Stop loading state after receiving the bot response
       setLoading(false);
     }
   };
@@ -69,7 +65,6 @@ const Page = () => {
     if (e.target.files && e.target.files[0]) {
       formData.append("file", e.target.files[0]);
 
-      // Start loading state during file upload
       setLoading(true);
 
       try {
@@ -87,7 +82,6 @@ const Page = () => {
           data?.result?.response?.candidates?.[0]?.content?.parts?.[0]?.text ||
           "No text available";
 
-        // Add bot message to chat
         setChat((prevChat) => [...prevChat, { type: "bot", message: text }]);
       } catch (error: any) {
         console.error("Error uploading file:", error);
@@ -96,14 +90,12 @@ const Page = () => {
           { type: "bot", message: "Error uploading file" },
         ]);
       } finally {
-        // Stop loading state after receiving the bot response
         setLoading(false);
       }
     }
   };
 
   useEffect(() => {
-    // Scroll to bottom when chat updates
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chat]);
 
