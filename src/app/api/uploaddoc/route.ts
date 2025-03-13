@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     const uploadsDir = path.join(process.cwd(), 'public/uploads'); 
     const filePath = path.join(uploadsDir, file.name);
 
-    await fs.writeFile(filePath, fileBuffer);
+    await fs.writeFile(filePath, new Uint8Array(fileBuffer));
     console.log(`File saved locally at: ${filePath}`);
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
@@ -53,8 +53,10 @@ export async function POST(req: NextRequest) {
 
     await fs.unlink(filePath);
     console.log(`File deleted from local system: ${filePath}`);
+    console.log(result.response.text());
+    
 
-    return NextResponse.json({ result, status: 200 });
+    return NextResponse.json({ message : result.response.text() , status: 200 });
   } catch (error: any) {
     console.error(error);
     return NextResponse.json({ error: "Error making API request", details: error.message }, { status: 500 });

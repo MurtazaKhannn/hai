@@ -1,12 +1,14 @@
 // console.log(process.env.GOOGLE_CLIENT_ID);
 // console.log(process.env.GOOGLE_CLIENT_SECRET);
 
-import { Appbar } from "@/components/Appbar";
+import { redirect } from "next/navigation";
+
 
 export default function Home(){
-  return (
-    <main>
-      <Appbar />
-    </main>
-  )
+  // return (
+  //   <main>
+      redirect("/chat");
+    //   <Appbar />
+    // </main>
+  // )
 }

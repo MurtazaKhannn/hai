@@ -79,7 +79,7 @@ const Page = () => {
 
         const data = await response.json();
         const text =
-          data?.result?.response?.candidates?.[0]?.content?.parts?.[0]?.text ||
+          data?.message ||
           "No text available";
 
         setChat((prevChat) => [...prevChat, { type: "bot", message: text }]);
@@ -156,7 +156,7 @@ const Page = () => {
             />
           </div>
           <button
-            className="relative bg-zinc-900 rounded-full w-[2.7vw] h-[5.4vh] absolute right-14 top-2 flex items-center justify-center"
+            className="relative bg-zinc-900 rounded-full w-[2.7vw] h-[5.4vh] right-14 top-2 flex items-center justify-center"
             type="submit"
           >
             <AiOutlineSend size={20} className="text-white" />
