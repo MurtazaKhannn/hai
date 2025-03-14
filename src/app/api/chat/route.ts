@@ -18,13 +18,22 @@ export async function POST(req: NextRequest) {
       ],
     });
 
+    const systemPrompt = {
+      role: "user",
+      parts: [{
+        text: "Write a humorous and overly critical review of these songs, exaggerating their flaws in an extremely sarcastic manner with a mix of english and hinglish."
+      }],
+    };
+
     // Ensure the first message is from the user
     const chatHistory = history.map((entry: any, index: number) => ({
       role: index === 0 ? 'user' : entry.type === 'bot' ? 'model' : 'user',
       parts: [{ text: entry.message }],
     }));
 
-    const chat = model.startChat({ history: chatHistory });
+    const formattedHistory = [systemPrompt, ...chatHistory];
+
+    const chat = model.startChat({ history: formattedHistory });
 
     const result = await chat.sendMessage(message);
 
