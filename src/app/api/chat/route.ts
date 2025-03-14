@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
 
     const systemPrompt = {
       role: "user",
-      parts: [{ text: "Write a humorous and overly critical review of these songs, exaggerating their flaws in an extremely sarcastic manner with a mix of English and Hinglish." }],
+      parts: [{ text: "Write a humorous and overly critical review of these songs, exaggerating their flaws in an extremely sarcastic manner with a mix of English and Hinglish. Don't Ask anything further just write sarcastic things if u know about the song otherwise say random sarcastic things about music Taste somewhere rekated to the data that you have been provided with." }],
     };
 
     const chatHistory = history.map((entry: any, index: number) => ({
