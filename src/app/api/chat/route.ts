@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
 
   } catch (error: any) {
     console.error("Error:", error.message || error);
+    console.error("Stack:", error.stack);  // Log stack trace
     return new NextResponse(JSON.stringify({ message: "Error occurred", error: error.message, status: 400 }), {
       status: 400,
       headers: {
@@ -50,6 +51,7 @@ export async function POST(req: NextRequest) {
         "Access-Control-Allow-Headers": "Content-Type",
       },
     });
+
   }
 }
 
