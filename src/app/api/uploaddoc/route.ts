@@ -51,12 +51,34 @@ export async function POST(req: NextRequest) {
 
     console.log(result.response.text());
 
+    const responseText = result.response.text();
+    const encoder = new TextEncoder();
+    
+    const stream = new ReadableStream({
+      start(controller) {
+        const chunks = responseText.split("\n"); // Split into lines for streaming
+
+        function sendChunks(index: number) {
+          if (index < chunks.length) {
+            controller.enqueue(encoder.encode(chunks[index] + "\n"));
+            setTimeout(() => sendChunks(index + 1), 500); // Delay each chunk for smooth streaming
+          } else {
+            controller.close();
+          }
+        }
+
+        sendChunks(0);
+      },
+    });
+
     await fs.unlink(filePath);
     console.log(`File deleted from local system: ${filePath}`);
     console.log(result.response.text());
     
 
-    return NextResponse.json({ message : result.response.text() , status: 200 });
+    return new Response(stream, {
+      headers: { "Content-Type": "text/plain" },
+    });  
   } catch (error: any) {
     console.error(error);
     return NextResponse.json({ error: "Error making API request", details: error.message }, { status: 500 });
